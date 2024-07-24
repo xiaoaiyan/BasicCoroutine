@@ -1,0 +1,49 @@
+package com.example.aiyan.basiccoroutines.zhutao
+
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+import retrofit2.http.GET
+import retrofit2.http.Path
+
+private const val BASE_URL = "https://api.github.com"
+private val retrofit = Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build()
+val github = retrofit.create<Github>()
+
+interface Github {
+    //"https://api.github.com/repos/{owner}/{repo}/contributors",
+    @GET("/repos/{owner}/{repo}/contributors")
+    fun contributorsCall(
+        @Path("owner") owner: String, //square
+        @Path("repo") repo: String //retrofit
+    ): Call<List<Contributor>>
+
+    @GET("/repos/{owner}/{repo}/contributors")
+    suspend fun contributors(
+        @Path("owner") owner: String, //square
+        @Path("repo") repo: String //retrofit
+    ): List<Contributor>
+}
+
+data class Contributor(
+    val avatar_url: String,
+    val contributions: Int,
+    val events_url: String,
+    val followers_url: String,
+    val following_url: String,
+    val gists_url: String,
+    val gravatar_id: String,
+    val html_url: String,
+    val id: Int,
+    val login: String,
+    val node_id: String,
+    val organizations_url: String,
+    val received_events_url: String,
+    val repos_url: String,
+    val site_admin: Boolean,
+    val starred_url: String,
+    val subscriptions_url: String,
+    val type: String,
+    val url: String
+)
