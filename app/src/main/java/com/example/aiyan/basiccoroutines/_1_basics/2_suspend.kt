@@ -24,8 +24,19 @@ class SuspendFunctionActivity : ComponentActivity() {
 
     private fun coroutineStyle() {
         CoroutineScope(Dispatchers.Main).launch {
-            val contributors = github.contributors("square", "retrofit")
-            showContributors(contributors)
+            /**
+             * 挂起函数执行完后自动切回来了
+             */
+            val contributors = github.contributors("square", "retrofit") //后台线程执行
+            showContributors(contributors) //主线程执行
+            /**
+             * suspend挂起：协程让出正在执行它的线程 知道 挂起函数执行完成（挂起函数会在它指定的线程执行完成）
+             * ——————————github.contributors("square", "retrofit")
+             * 恢复：挂起函数执行完成后，继续执行挂起函数后面的代码
+             * ——————————showContributors(contributors)
+             *
+             * suspend挂起函数，协程与线程脱离，故挂起函数只能在协程中/挂起函数中执行
+             */
         }
     }
 
@@ -39,8 +50,7 @@ class SuspendFunctionActivity : ComponentActivity() {
                 showContributors(response.body()!!)
             }
 
-            override fun onFailure(p0: Call<List<Contributor>>, p1: Throwable) {
-                TODO("Not yet implemented")
+            override fun onFailure(call: Call<List<Contributor>>, th: Throwable) {
             }
         })
     }
