@@ -1,4 +1,4 @@
-package com.example.aiyan.basiccoroutines.zhutao.theme
+package com.example.aiyan.basiccoroutines.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

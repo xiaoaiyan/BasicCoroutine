@@ -36,3 +36,5 @@ coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
+# 查看当前协程：-Dkotlinx.coroutines.debug
+

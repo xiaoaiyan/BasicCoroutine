@@ -3,10 +3,11 @@ package com.example.aiyan.basiccoroutines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-suspend fun getData1(){}
+//函数签名：
+suspend fun getUserInfo1(){}
 
-suspend fun getData2(name: String): String {
-    return ""
-}
+suspend fun getUserInfo2(): String{return ""}
 
-suspend fun getData3(name: String): String = withContext(Dispatchers.IO) { "" }
+suspend fun getUserInfo3(name: String): String{return ""}
+
+suspend fun getUserInfo4(name: String) = withContext(Dispatchers.IO){""}
