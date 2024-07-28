@@ -71,4 +71,6 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
+    implementation(libs.okio)
+    implementation(libs.okhttp3.logging.interceptor)
 }
