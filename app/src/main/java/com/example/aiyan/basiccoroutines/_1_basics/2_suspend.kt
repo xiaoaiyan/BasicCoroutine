@@ -26,6 +26,10 @@ class SuspendFunctionActivity : ComponentActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             /**
              * 挂起函数执行完后自动切回来了
+             *
+             * 挂起：就是稍后会切回来的一个线程切换执行的操作（本质上是回调实现）
+             *
+             * 最终需要直接或者间接调用挂起函数（协程框架自带的实现了挂起的挂起函数）
              */
             val contributors = github.contributors("square", "retrofit") //后台线程执行
             showContributors(contributors) //主线程执行
@@ -53,23 +57,6 @@ class SuspendFunctionActivity : ComponentActivity() {
             override fun onFailure(call: Call<List<Contributor>>, th: Throwable) {
             }
         })
-    }
-
-    private suspend fun callbackStyleToSuspend(): List<Contributor>{
-        return suspendCancellableCoroutine {
-            github.contributorsCall("square", "retrofit").enqueue(object : Callback<List<Contributor>> {
-                override fun onResponse(
-                    call: Call<List<Contributor>>,
-                    response: Response<List<Contributor>>
-                ) {
-                    it.resumeWith(Result.success(response.body()!!))
-                }
-
-                override fun onFailure(call: Call<List<Contributor>>, throwable: Throwable) {
-                    it.resumeWith(Result.failure(throwable))
-                }
-            })
-        }
     }
 
     private fun showContributors(contributors: List<Contributor>) {

@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.example.aiyan.basiccoroutines.theme.BasicCoroutinesTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import retrofit2.Call
@@ -64,3 +65,5 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
+fun CoroutineScope.thread(): String = Thread.currentThread().name

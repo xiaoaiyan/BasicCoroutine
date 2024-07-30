@@ -15,7 +15,7 @@
         android:theme="@style/Theme.BasicCoroutines"
         tools:targetApi="31">
         <activity
-            android:name=".demo.PracticeCoroutineActivity"
+            android:name="._1_basics.WithContextActivity"
             android:exported="true"
             android:theme="@style/Theme.BasicCoroutines">
             <intent-filter>
