@@ -68,10 +68,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
     implementation(libs.retrofit.mock)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.retrofit.adapter.rxjava3)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
     implementation(libs.okio)
     implementation(libs.okhttp3.logging.interceptor)
+    implementation(libs.reactivex.rxjava)
+    implementation(libs.reactivex.rxandroid)
 }

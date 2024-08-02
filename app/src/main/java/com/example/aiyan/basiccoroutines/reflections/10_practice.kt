@@ -1,11 +1,7 @@
-package com.example.aiyan.basiccoroutines.demo
+package com.example.aiyan.basiccoroutines.reflections
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.graphics.Paint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

@@ -1,7 +1,9 @@
 package com.example.aiyan.basiccoroutines
 
+import io.reactivex.rxjava3.core.Observable
 import retrofit2.Call
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
@@ -13,7 +15,8 @@ import java.util.concurrent.TimeoutException
 
 private const val BASE_URL = "https://api.github.com"
 private val retrofit =
-    Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build()
+    Retrofit.Builder().baseUrl(BASE_URL).addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create()).build()
 val github = retrofit.create<Github>()
 
 private val unstableBehavior = NetworkBehavior.create().apply {
@@ -38,6 +41,12 @@ interface Github {
         @Path("owner") owner: String, //square
         @Path("repo") repo: String //retrofit
     ): List<Contributor>
+
+    @GET("/repos/{owner}/{repo}/contributors")
+    fun contributorsRxJava(
+        @Path("owner") owner: String, //square
+        @Path("repo") repo: String //retrofit
+    ): Observable<List<Contributor>>
 }
 
 private class MockGithub(private val delegate: BehaviorDelegate<Github>) : Github {
@@ -50,6 +59,14 @@ private class MockGithub(private val delegate: BehaviorDelegate<Github>) : Githu
     override suspend fun contributors(owner: String, repo: String): List<Contributor> {
         val contributors = CoroutineApplication.contributors[repo]
         return delegate.returningResponse(contributors).contributors(owner, repo)
+    }
+
+    override fun contributorsRxJava(
+        owner: String,
+        repo: String
+    ): Observable<List<Contributor>> {
+        val contributors = CoroutineApplication.contributors[repo]
+        return delegate.returningResponse(contributors).contributorsRxJava(owner, repo)
     }
 }
 
