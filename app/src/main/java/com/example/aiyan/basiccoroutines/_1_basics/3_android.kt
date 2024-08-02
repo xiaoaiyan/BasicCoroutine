@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class AndroidActivity: ComponentActivity(){
+class AndroidActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -23,7 +23,7 @@ class AndroidActivity: ComponentActivity(){
         lifecycleScope
     }
 
-    class AndroidViewModel: ViewModel(){
+    class AndroidViewModel : ViewModel() {
         /*
         在ViewModel中使用，和lifecycleScope使用的位置不同而已，都是Dispatchers.Main.immediate + SupervisorJob
          */

@@ -6,10 +6,24 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.mock.BehaviorDelegate
+import retrofit2.mock.MockRetrofit
+import retrofit2.mock.NetworkBehavior
+import java.util.concurrent.TimeoutException
 
 private const val BASE_URL = "https://api.github.com"
-private val retrofit = Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build()
+private val retrofit =
+    Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).build()
 val github = retrofit.create<Github>()
+
+private val unstableBehavior = NetworkBehavior.create().apply {
+    setFailurePercent(40)
+    setFailureException(TimeoutException("Connection time out!"))
+}
+private val mockUnstableRetrofit =
+    MockRetrofit.Builder(retrofit).networkBehavior(unstableBehavior).build()
+private val unstableDelegate = mockUnstableRetrofit.create(Github::class.java)
+val unstableGithub: Github = MockGithub(unstableDelegate)
 
 interface Github {
     //"https://api.github.com/repos/{owner}/{repo}/contributors",
@@ -25,6 +39,20 @@ interface Github {
         @Path("repo") repo: String //retrofit
     ): List<Contributor>
 }
+
+private class MockGithub(private val delegate: BehaviorDelegate<Github>) : Github {
+
+    override fun contributorsCall(owner: String, repo: String): Call<List<Contributor>> {
+        val contributors = CoroutineApplication.contributors[repo]
+        return delegate.returningResponse(contributors).contributorsCall(owner, repo)
+    }
+
+    override suspend fun contributors(owner: String, repo: String): List<Contributor> {
+        val contributors = CoroutineApplication.contributors[repo]
+        return delegate.returningResponse(contributors).contributors(owner, repo)
+    }
+}
+
 
 data class Contributor(
     val avatar_url: String,

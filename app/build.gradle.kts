@@ -69,6 +69,7 @@ dependencies {
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    implementation(libs.retrofit.mock)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
     implementation(libs.okio)

@@ -132,31 +132,36 @@ private suspend fun downloadWithOkhttpSuspendCancellableCoroutine(): ByteArray {
 
 private suspend fun handleImage(byteArray: ByteArray) = withContext(Dispatchers.Default) {
     val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-
-    val grayBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(grayBitmap)
-    val colorMatrix = ColorMatrix()
-    colorMatrix.setSaturation(0f)
-    val paint = Paint()
-    paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
-    canvas.drawBitmap(bitmap, 0f, 0f, paint)
-
-
-//    val grayBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.RGB_565)
-//    for (x in 0 until bitmap.width) {
-//        for (y in 0 until bitmap.height) {
-//            val pixel = bitmap.getPixel(x, y)
-//            val red = pixel shr 16 and 0xff
-//            val green = pixel shr 8 and 0xff
-//            val blue = pixel and 0xff
-//            val gray = (red * 0.3 + green * 0.59 + blue * 0.11).toInt()
-//            grayBitmap.setPixel(x, y, gray shl 16 or (gray shl 8) or gray)
-//        }
-//    }
-
+    val grayBitmap = grayBitmap(bitmap)
     val byteArrayOutputStream = ByteArrayOutputStream()
     grayBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
     byteArrayOutputStream.toByteArray()
+}
+
+private fun grayBitmap(bitmap: Bitmap): Bitmap {
+
+    //实现一
+//    val grayBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+//    val canvas = Canvas(grayBitmap)
+//    val colorMatrix = ColorMatrix()
+//    colorMatrix.setSaturation(0f)
+//    val paint = Paint()
+//    paint.colorFilter = ColorMatrixColorFilter(colorMatrix)
+//    canvas.drawBitmap(bitmap, 0f, 0f, paint)
+
+    //实现二
+    val grayBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.RGB_565)
+    for (x in 0 until bitmap.width) {
+        for (y in 0 until bitmap.height) {
+            val pixel = bitmap.getPixel(x, y)
+            val red = pixel shr 16 and 0xff
+            val green = pixel shr 8 and 0xff
+            val blue = pixel and 0xff
+            val gray = (red * 0.3 + green * 0.59 + blue * 0.11).toInt()
+            grayBitmap.setPixel(x, y, gray shl 16 or (gray shl 8) or gray)
+        }
+    }
+    return grayBitmap
 }
 
 private suspend fun writeImage(
