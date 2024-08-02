@@ -3,11 +3,10 @@ package com.example.aiyan.basiccoroutines.demo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.aiyan.basiccoroutines.CoroutineApplication
 import com.example.aiyan.basiccoroutines.unstableGithub
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeoutException
 
 class FlowTryCatchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,15 +21,13 @@ class FlowTryCatchActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch {
-            CoroutineApplication.initMockContributor(this@FlowTryCatchActivity)
-
-            try {
-                flow.collect {
+            flow.collect {
+                try {
                     val contributors = unstableGithub.contributors("square", "okhttp")
                     println(contributors)
+                } catch (timeoutException: TimeoutException) {
+                    println(timeoutException.message)
                 }
-            } catch (e: Exception) {
-                println("catch in launch ${e.message}")
             }
         }
     }
