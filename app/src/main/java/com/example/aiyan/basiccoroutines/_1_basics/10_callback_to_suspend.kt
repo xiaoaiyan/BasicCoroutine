@@ -6,9 +6,14 @@ import androidx.lifecycle.lifecycleScope
 import com.example.aiyan.basiccoroutines.Contributor
 import com.example.aiyan.basiccoroutines.github
 import com.example.aiyan.basiccoroutines.mockGithub
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -110,6 +115,51 @@ class CallbackToSuspendActivity : ComponentActivity() {
 
                     override fun onFailure(call: Call<List<Contributor>>, throwable: Throwable) {
                         it.resumeWithException(throwable)
+                    }
+                })
+        }
+    }
+
+    /**
+     * 尝试其他方法，好像都只是能拿到加入请求队列的函数的返回值，具体的请求结果是无法获取的
+     */
+    private suspend fun getCallbackResult() {
+        //1、使用async启动协程？？？好像拿不到
+        CoroutineScope(currentCoroutineContext()).async {
+            mockGithub.contributorsCall("square", "okhttp")
+                .enqueue(object : Callback<List<Contributor>> {
+                    override fun onResponse(
+                        call: Call<List<Contributor>>,
+                        response: Response<List<Contributor>>
+                    ) {
+
+                    }
+
+                    override fun onFailure(
+                        call: Call<List<Contributor>>,
+                        throwable: Throwable
+                    ) {
+
+                    }
+                })
+        }.await()
+
+        //2、使用withContext？？？好像也拿不到
+        withContext(Dispatchers.IO) {
+            mockGithub.contributorsCall("square", "okhttp")
+                .enqueue(object : Callback<List<Contributor>> {
+                    override fun onResponse(
+                        call: Call<List<Contributor>>,
+                        response: Response<List<Contributor>>
+                    ) {
+
+                    }
+
+                    override fun onFailure(
+                        call: Call<List<Contributor>>,
+                        throwable: Throwable
+                    ) {
+
                     }
                 })
         }
