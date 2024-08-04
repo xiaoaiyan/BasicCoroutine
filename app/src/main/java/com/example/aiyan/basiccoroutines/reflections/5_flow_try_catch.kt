@@ -3,7 +3,7 @@ package com.example.aiyan.basiccoroutines.reflections
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.aiyan.basiccoroutines.unstableGithub
+import com.example.aiyan.basiccoroutines.mockGithub
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeoutException
@@ -23,7 +23,7 @@ class FlowTryCatchActivity : ComponentActivity() {
         lifecycleScope.launch {
             flow.collect {
                 try {
-                    val contributors = unstableGithub.contributors("square", "okhttp")
+                    val contributors = mockGithub.contributors("square", "okhttp")
                     println(contributors)
                 } catch (timeoutException: TimeoutException) {
                     println(timeoutException.message)

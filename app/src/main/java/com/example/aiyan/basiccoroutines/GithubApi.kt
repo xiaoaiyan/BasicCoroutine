@@ -11,6 +11,7 @@ import retrofit2.http.Path
 import retrofit2.mock.BehaviorDelegate
 import retrofit2.mock.MockRetrofit
 import retrofit2.mock.NetworkBehavior
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeoutException
 
 private const val BASE_URL = "https://api.github.com"
@@ -19,14 +20,14 @@ private val retrofit =
         .addConverterFactory(GsonConverterFactory.create()).build()
 val github = retrofit.create<Github>()
 
-private val unstableBehavior = NetworkBehavior.create().apply {
+private val mockBehavior = NetworkBehavior.create().apply {
     setFailurePercent(40)
     setFailureException(TimeoutException("Connection time out!"))
 }
-private val mockUnstableRetrofit =
-    MockRetrofit.Builder(retrofit).networkBehavior(unstableBehavior).build()
-private val unstableDelegate = mockUnstableRetrofit.create(Github::class.java)
-val unstableGithub: Github = MockGithub(unstableDelegate)
+private val mockRetrofit =
+    MockRetrofit.Builder(retrofit).networkBehavior(mockBehavior).build()
+private val mockDelegate = mockRetrofit.create(Github::class.java)
+val mockGithub: Github = MockGithub(mockDelegate)
 
 interface Github {
     //"https://api.github.com/repos/{owner}/{repo}/contributors",
@@ -47,6 +48,12 @@ interface Github {
         @Path("owner") owner: String, //square
         @Path("repo") repo: String //retrofit
     ): Observable<List<Contributor>>
+
+    @GET("/repos/{owner}/{repo}/contributors")
+    fun contributorsCompletableFuture(
+        @Path("owner") owner: String, //square
+        @Path("repo") repo: String //retrofit
+    ): CompletableFuture<List<Contributor>>
 }
 
 private class MockGithub(private val delegate: BehaviorDelegate<Github>) : Github {
@@ -67,6 +74,14 @@ private class MockGithub(private val delegate: BehaviorDelegate<Github>) : Githu
     ): Observable<List<Contributor>> {
         val contributors = CoroutineApplication.contributors[repo]
         return delegate.returningResponse(contributors).contributorsRxJava(owner, repo)
+    }
+
+    override fun contributorsCompletableFuture(
+        owner: String,
+        repo: String
+    ): CompletableFuture<List<Contributor>> {
+        val contributors = CoroutineApplication.contributors[repo]
+        return delegate.returningResponse(contributors).contributorsCompletableFuture(owner, repo)
     }
 }
 
