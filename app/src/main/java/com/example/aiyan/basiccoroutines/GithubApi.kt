@@ -13,6 +13,7 @@ import retrofit2.mock.MockRetrofit
 import retrofit2.mock.NetworkBehavior
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeoutException
+import kotlin.time.Duration.Companion.seconds
 
 private const val BASE_URL = "https://api.github.com"
 private val retrofit =
@@ -21,8 +22,9 @@ private val retrofit =
 val github = retrofit.create<Github>()
 
 private val mockBehavior = NetworkBehavior.create().apply {
-    setFailurePercent(40)
-    setFailureException(TimeoutException("Connection time out!"))
+    //默认模拟的请求时间2s
+//    setFailurePercent(40)
+//    setFailureException(TimeoutException("Connection time out!"))
 }
 private val mockRetrofit =
     MockRetrofit.Builder(retrofit).networkBehavior(mockBehavior).build()

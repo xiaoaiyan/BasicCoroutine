@@ -7,6 +7,7 @@ import com.example.aiyan.basiccoroutines.github
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -66,17 +67,35 @@ class ParallelActivity : ComponentActivity() {
         }
 
         /**
-         * rxjava的实现？？？不知道，应该是这样子
+         * rxjava的实现
          */
         val observable1 = github.contributorsRxJava("JetBrains", "Kotlin")
         val observable2 = github.contributorsRxJava("square", "okhttp")
         val disposable = Observable.zip(
             observable1, observable2
-        ) { t1, t2 ->
-            t1 + t2
-        }.observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                println(it)
+        ) { t1, t2 -> t1 + t2 }.observeOn(AndroidSchedulers.mainThread()).subscribe {
+            println(it)
+        }
+
+        /**
+         * 后续的某个操作依赖之前的初始化完成
+         */
+        lifecycleScope.launch {
+
+            val initJob = launch {
+                delay(3000)
+                println("init finished")
             }
+
+            //执行一些不需要依赖初始化的操作
+            delay(1_000)
+            println("do something before init finished")
+
+            //等待初始化完成
+            initJob.join()
+
+            //此时初始化已经完成
+            println("do something after init finished")
+        }
     }
 }
