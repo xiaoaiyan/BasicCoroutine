@@ -17,7 +17,7 @@ class AndroidActivity : ComponentActivity() {
         /*
         绑定当前组件的生命周期，生命周期结束时，取消所有的协程
         内置的ContinuationInterceptor == Dispatchers.Main.immediate 指定在主线程执行
-        Dispatchers.Main.immediate：在主线程，直接执行协程代码
+        Dispatchers.Main.immediate：在主线程启动协程，continuationInterceptor指定它时，直接执行协程代码
         Dispatchers.Main：使用handler.post将协程代码放到主线程执行
          */
         lifecycleScope

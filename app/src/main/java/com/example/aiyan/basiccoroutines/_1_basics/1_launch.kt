@@ -78,7 +78,7 @@ class LaunchCoroutinesActivity : ComponentActivity() {
 
         }
         /*
-        不再使用是，需要自己手动关闭线程池，防止泄漏
+        不再使用时，需要自己手动关闭线程池，防止泄漏
          */
         newFixedThreadPoolContext.close()
 
