@@ -6,42 +6,39 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 class CoroutineApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        runBlocking {
+        initJob = CoroutineScope(EmptyCoroutineContext).launch {
             initMockContributorWithFlow(this@CoroutineApplication)
         }
     }
 
     private suspend fun initMockContributorWithFlow(context: Context) {
-        if (contributors.isNotEmpty()) return
-        val gson = Gson()
-        val rawType = object : TypeToken<List<Contributor>>() {}.type
-        withContext(Dispatchers.IO){
-            flow {
-                emit("okhttp")
-                emit("okio")
-                emit("retrofit")
-            }.map {key ->
-                key to async {
-                    context.assets.open("square_$key.json").reader().use {
-                        gson.fromJson<List<Contributor>>(it, rawType)
+        withContext(Dispatchers.IO) {
+            val gson = Gson()
+            val rawType = object : TypeToken<List<Contributor>>() {}.rawType
+            flowOf("okhttp", "okio", "retrofit")
+                .map { key ->
+                    key to async {
+                        context.assets.open("square_$key.json").reader().use {
+                            gson.fromJson<List<Contributor>>(it, rawType)
+                        }
                     }
+                }.collect {
+                    contributors[it.first] = it.second.await()
                 }
-            }.collect{
-                contributors[it.first] = it.second.await()
-            }
         }
     }
 
@@ -75,5 +72,6 @@ class CoroutineApplication : Application() {
 
     companion object {
         val contributors = mutableMapOf<String, List<Contributor>>()
+        var initJob: Job? = null
     }
 }

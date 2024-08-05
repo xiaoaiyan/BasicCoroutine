@@ -1,6 +1,11 @@
 package com.example.aiyan.basiccoroutines
 
 import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
@@ -13,7 +18,7 @@ import retrofit2.mock.MockRetrofit
 import retrofit2.mock.NetworkBehavior
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeoutException
-import kotlin.time.Duration.Companion.seconds
+import kotlin.coroutines.EmptyCoroutineContext
 
 private const val BASE_URL = "https://api.github.com"
 private val retrofit =
@@ -23,11 +28,10 @@ val github = retrofit.create<Github>()
 
 private val mockBehavior = NetworkBehavior.create().apply {
     //默认模拟的请求时间2s
-//    setFailurePercent(40)
-//    setFailureException(TimeoutException("Connection time out!"))
+    setFailurePercent(40)
+    setFailureException(TimeoutException("Connection time out!"))
 }
-private val mockRetrofit =
-    MockRetrofit.Builder(retrofit).networkBehavior(mockBehavior).build()
+private val mockRetrofit = MockRetrofit.Builder(retrofit).networkBehavior(mockBehavior).build()
 private val mockDelegate = mockRetrofit.create(Github::class.java)
 val mockGithub: Github = MockGithub(mockDelegate)
 
@@ -60,29 +64,32 @@ interface Github {
 
 private class MockGithub(private val delegate: BehaviorDelegate<Github>) : Github {
 
+    private fun ensureNotEmpty(): Map<String, List<Contributor>>{
+        return runBlocking {
+            if (CoroutineApplication.initJob?.isCompleted == false){
+                CoroutineApplication.initJob?.join()
+            }
+            CoroutineApplication.contributors
+        }
+    }
+
     override fun contributorsCall(owner: String, repo: String): Call<List<Contributor>> {
-        val contributors = CoroutineApplication.contributors[repo]
+        val contributors = ensureNotEmpty()[repo]
         return delegate.returningResponse(contributors).contributorsCall(owner, repo)
     }
 
     override suspend fun contributors(owner: String, repo: String): List<Contributor> {
-        val contributors = CoroutineApplication.contributors[repo]
+        val contributors = ensureNotEmpty()[repo]
         return delegate.returningResponse(contributors).contributors(owner, repo)
     }
 
-    override fun contributorsRxJava(
-        owner: String,
-        repo: String
-    ): Observable<List<Contributor>> {
-        val contributors = CoroutineApplication.contributors[repo]
+    override fun contributorsRxJava(owner: String, repo: String): Observable<List<Contributor>> {
+        val contributors = ensureNotEmpty()[repo]
         return delegate.returningResponse(contributors).contributorsRxJava(owner, repo)
     }
 
-    override fun contributorsCompletableFuture(
-        owner: String,
-        repo: String
-    ): CompletableFuture<List<Contributor>> {
-        val contributors = CoroutineApplication.contributors[repo]
+    override fun contributorsCompletableFuture(owner: String, repo: String): CompletableFuture<List<Contributor>> {
+        val contributors = ensureNotEmpty()[repo]
         return delegate.returningResponse(contributors).contributorsCompletableFuture(owner, repo)
     }
 }
