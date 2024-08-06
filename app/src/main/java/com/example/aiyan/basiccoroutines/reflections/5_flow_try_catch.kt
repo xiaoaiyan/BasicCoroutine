@@ -3,6 +3,7 @@ package com.example.aiyan.basiccoroutines.reflections
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.aiyan.basiccoroutines.CoroutineApplication
 import com.example.aiyan.basiccoroutines.mockGithub
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ class FlowTryCatchActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch {
+            CoroutineApplication.initJob?.join()
             flow.collect {
                 try {
                     val contributors = mockGithub.contributors("square", "okhttp")

@@ -65,12 +65,13 @@ interface Github {
 private class MockGithub(private val delegate: BehaviorDelegate<Github>) : Github {
 
     private fun ensureNotEmpty(): Map<String, List<Contributor>>{
-        return runBlocking {
-            if (CoroutineApplication.initJob?.isCompleted == false){
-                CoroutineApplication.initJob?.join()
-            }
-            CoroutineApplication.contributors
-        }
+//        return runBlocking {
+//            if (CoroutineApplication.initJob?.isCompleted == false){
+//                CoroutineApplication.initJob?.join()
+//            }
+//            CoroutineApplication.contributors
+//        }
+        return CoroutineApplication.contributors
     }
 
     override fun contributorsCall(owner: String, repo: String): Call<List<Contributor>> {

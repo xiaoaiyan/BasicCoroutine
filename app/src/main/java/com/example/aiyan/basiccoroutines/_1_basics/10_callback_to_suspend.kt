@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.aiyan.basiccoroutines.Contributor
+import com.example.aiyan.basiccoroutines.CoroutineApplication
 import com.example.aiyan.basiccoroutines.github
 import com.example.aiyan.basiccoroutines.mockGithub
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,7 @@ class CallbackToSuspendActivity : ComponentActivity() {
 
             val retrofitJob = launch {
                 try {
+                    CoroutineApplication.initJob?.join()
                     val retrofit = suspendCoroutine {
                         mockGithub.contributorsCall("square", "retrofit")
                             .enqueue(object : Callback<List<Contributor>> {
@@ -56,12 +58,12 @@ class CallbackToSuspendActivity : ComponentActivity() {
 
             val okhttpJob = launch {
                 try {
+                    CoroutineApplication.initJob?.join()
                     val okhttp = suspendCancellableCoroutine {
                         //添加取消时的监听器
                         it.invokeOnCancellation {
                             println("okhttpJob cancelled")
                         }
-
                         mockGithub.contributorsCall("square", "okhttp")
                             .enqueue(object : Callback<List<Contributor>> {
                                 override fun onResponse(
@@ -126,6 +128,7 @@ class CallbackToSuspendActivity : ComponentActivity() {
     private suspend fun getCallbackResult() {
         //1、使用async启动协程？？？好像拿不到
         CoroutineScope(currentCoroutineContext()).async {
+            CoroutineApplication.initJob?.join()
             mockGithub.contributorsCall("square", "okhttp")
                 .enqueue(object : Callback<List<Contributor>> {
                     override fun onResponse(
@@ -146,6 +149,7 @@ class CallbackToSuspendActivity : ComponentActivity() {
 
         //2、使用withContext？？？好像也拿不到
         withContext(Dispatchers.IO) {
+            CoroutineApplication.initJob?.join()
             mockGithub.contributorsCall("square", "okhttp")
                 .enqueue(object : Callback<List<Contributor>> {
                     override fun onResponse(

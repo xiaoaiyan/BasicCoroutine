@@ -13,6 +13,21 @@ import kotlinx.coroutines.runBlocking
  * 2、launch或者async时未指定了Job，启动的协程就是使用的CoroutineScope的子协程
  *
  * 结构化结束：父协程需等到所有的子协程都执行结束后才会结束（就算父协程中的逻辑已经执行完毕）
+ *
+ * 用例：初始化网络和数据库，后续请求数据需要依赖初始化完成
+ * val job = scope.launch{
+ *      launch{
+ *          //网络初始化
+ *      }
+ *      launch{
+ *          //数据库初始化
+ *      }
+ * }
+ * //其他操作，不依赖初始化
+ * scope.launch{
+ *      job.join() //协程挂起，直到job完成（job父协程等到所有子协程（网络和数据库初始化都完成），才会完成）
+ *      //数据请求，此时初始化工作已经完成
+ * }
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun main() {
