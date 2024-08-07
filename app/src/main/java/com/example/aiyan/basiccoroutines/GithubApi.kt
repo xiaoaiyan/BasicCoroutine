@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
@@ -21,10 +22,15 @@ import java.util.concurrent.TimeoutException
 import kotlin.coroutines.EmptyCoroutineContext
 
 private const val BASE_URL = "https://api.github.com"
+private val okHttpClient = OkHttpClient.Builder().build()
 private val retrofit =
-    Retrofit.Builder().baseUrl(BASE_URL).addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+    Retrofit.Builder().client(okHttpClient).baseUrl(BASE_URL).addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create()).build()
 val github = retrofit.create<Github>()
+
+fun cancelRetrofit(){
+    okHttpClient.dispatcher.executorService.shutdown()
+}
 
 private val mockBehavior = NetworkBehavior.create().apply {
     //默认模拟的请求时间2s

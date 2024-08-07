@@ -52,6 +52,7 @@ import kotlin.coroutines.resume
  *
  * TODO -------------------拿到耗时请求的返回结果？？？----------------
  * 1、suspendCancellableCoroutine：可以拿到回调型耗时请求的返回结果
+ *  suspendCancellableCoroutine会一直挂起，直到调用resume
  * 2、async：发起耗时请求，在某个时刻需要使用返回结果，不支持回调型
  */
 
