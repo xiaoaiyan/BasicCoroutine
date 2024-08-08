@@ -20,8 +20,10 @@ class RunBlockingActivity() : ComponentActivity() {
 
         /**
          * runBlocking启动协程，和launch和async的区别
-         * 1、不需要CoroutineScope
+         * 1、不需要CoroutineScope（不需要上下文，不需要被取消）
          * 2、阻塞线程
+         *
+         * runBlocking取消会抛异常
          *
          * CoroutineScope：包含协程需要用到的上下文coroutineContext 和 取消所有启动的协程树的方法  cancel()
          *

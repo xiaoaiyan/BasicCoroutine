@@ -66,8 +66,9 @@ class BasicCoroutinesActivity : ComponentActivity() {
 //        whichFunctionCanChangeThread()
 
         lifecycleScope.launch(Dispatchers.IO){
-
+            println("launch in ${Thread.currentThread().name}")
             val result: String = suspendCancellableCoroutine {
+                println("suspendCancellableCoroutine in ${Thread.currentThread().name}")
                 Executors.newSingleThreadScheduledExecutor().schedule(
                     {
                         it.resume("finished")

@@ -13,8 +13,10 @@ import kotlinx.coroutines.launch
 /**
  * 并行协程的交互
  *
- * 1、开启多个请求，并行执行，最后一起展示结果
- * 2、单独需要一系列请求，之后的某个地方需要依赖这一系列请求完成（只需要知道完成）
+ * 1、开启多个请求，并行执行，最后一起展示结果 - async
+ * 2、单独需要一系列请求，之后的某个地方需要依赖这一系列请求完成（只需要知道完成）- join
+ *
+ * async启动协程：先并行，再调用await串行插入到其他协程中
  */
 class ParallelActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
