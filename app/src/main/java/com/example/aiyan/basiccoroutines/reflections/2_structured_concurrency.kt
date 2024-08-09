@@ -10,6 +10,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
+ * TODO ---------------协程中的Job和挂起函数中的Job -----------
+ *
  * TODO -----------------------异常流程----------------------
  * 1、抛出异常的协程，取消自己，isActive = false，协程链中的其他协程，isActive也会置为false
  * 正在挂起的协程，抛出CancellationException取消
