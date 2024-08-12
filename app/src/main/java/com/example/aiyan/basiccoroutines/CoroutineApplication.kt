@@ -5,7 +5,9 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.flow
@@ -18,9 +20,10 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 class CoroutineApplication : Application() {
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate() {
         super.onCreate()
-        initJob = CoroutineScope(EmptyCoroutineContext).launch {
+        initJob = GlobalScope.launch {
             initMockContributorWithFlow(this@CoroutineApplication)
         }
     }

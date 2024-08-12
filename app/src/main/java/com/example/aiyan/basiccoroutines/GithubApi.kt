@@ -34,8 +34,8 @@ fun cancelRetrofit(){
 
 private val mockBehavior = NetworkBehavior.create().apply {
     //默认模拟的请求时间2s
-    setFailurePercent(40)
-    setFailureException(TimeoutException("Connection time out!"))
+//    setFailurePercent(40)
+//    setFailureException(TimeoutException("Connection time out!"))
 }
 private val mockRetrofit = MockRetrofit.Builder(retrofit).networkBehavior(mockBehavior).build()
 private val mockDelegate = mockRetrofit.create(Github::class.java)

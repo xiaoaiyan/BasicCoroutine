@@ -28,6 +28,10 @@ class RunBlockingActivity() : ComponentActivity() {
          * CoroutineScope：包含协程需要用到的上下文coroutineContext 和 取消所有启动的协程树的方法  cancel()
          *
          * 主线程通过launch和async启动协程，ContinuationInterceptor为Dispatchers.Main.immediate时，会比Dispatchers.Main先执行
+         *
+         * CoroutineScope == BlockingCoroutine
+         * Job == BlockingCoroutine
+         * ContinuationInterceptor == BlockingEventLoop
          */
 
         lifecycleScope.launch(Dispatchers.Main) {
@@ -53,7 +57,9 @@ class RunBlockingActivity() : ComponentActivity() {
                      *
                      * 场景：已经使用挂起函数实现了某个功能，线程环境下调用后需要函数的返回结果
                      */
-                    val avatars = runBlocking { handleData(response.body()!!) }
+                    val avatars = runBlocking {
+                        handleData(response.body()!!)
+                    }
                     println(avatars)
                 }
 
