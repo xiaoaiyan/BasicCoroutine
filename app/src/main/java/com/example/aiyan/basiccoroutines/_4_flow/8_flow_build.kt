@@ -55,7 +55,6 @@ fun main() {
     //channelFlow：主要是可以启动协程从而在不同的协程中生产数据，可以实现跨协程生产
     //emit 改为 send 发送数据
     //为什么可以跨协程？？？send在不同的协程，但是receive还是在collect所在的协程
-
     val channelFlow = channelFlow {
         //回调支持，回调中无法调用挂起函数，使用trySend发送数据
         //awaitClose保证能发送数据，而不是还未回调，协程就执行完成了
