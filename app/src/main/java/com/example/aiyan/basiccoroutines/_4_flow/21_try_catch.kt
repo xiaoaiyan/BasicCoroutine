@@ -107,7 +107,7 @@ private suspend fun flowThinking(){
     flow.collect(flowCollector)
 }
 
-private fun <T> Flow<T>.noThing(): Flow<T> = flow {
+private fun <T> Flow<T>.noImplicitThing(): Flow<T> = flow {
     //将下游传入的FlowCollector，传入到上游Flow对象的block代码块的隐式接收者中
     println("nothing execute")
     collect(this)
