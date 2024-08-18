@@ -42,7 +42,7 @@ fun cancelRetrofit(){
 
 private val mockBehavior = NetworkBehavior.create().apply {
     //默认模拟的请求时间2s
-    setFailurePercent(0)
+    setFailurePercent(40)
     setFailureException(TimeoutException("Connection time out!"))
 }
 private val executor = Executors.newCachedThreadPool()
