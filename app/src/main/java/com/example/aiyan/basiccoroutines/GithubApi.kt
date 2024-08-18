@@ -1,11 +1,17 @@
 package com.example.aiyan.basiccoroutines
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -17,7 +23,9 @@ import retrofit2.http.Path
 import retrofit2.mock.BehaviorDelegate
 import retrofit2.mock.MockRetrofit
 import retrofit2.mock.NetworkBehavior
+import java.io.FileInputStream
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeoutException
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -34,12 +42,16 @@ fun cancelRetrofit(){
 
 private val mockBehavior = NetworkBehavior.create().apply {
     //默认模拟的请求时间2s
-//    setFailurePercent(40)
-//    setFailureException(TimeoutException("Connection time out!"))
+    setFailurePercent(0)
+    setFailureException(TimeoutException("Connection time out!"))
 }
-private val mockRetrofit = MockRetrofit.Builder(retrofit).networkBehavior(mockBehavior).build()
+private val executor = Executors.newCachedThreadPool()
+private val mockRetrofit = MockRetrofit.Builder(retrofit).backgroundExecutor(executor).networkBehavior(mockBehavior).build()
 private val mockDelegate = mockRetrofit.create(Github::class.java)
 val mockGithub: Github = MockGithub(mockDelegate)
+fun cancelMockRetrofit(){
+    executor.shutdown()
+}
 
 interface Github {
     //"https://api.github.com/repos/{owner}/{repo}/contributors",
@@ -85,9 +97,25 @@ private class MockGithub(private val delegate: BehaviorDelegate<Github>) : Githu
         return delegate.returningResponse(contributors).contributorsCall(owner, repo)
     }
 
+    private val contributions = mutableMapOf<String, List<Contributor>>()
     override suspend fun contributors(owner: String, repo: String): List<Contributor> {
-        val contributors = ensureNotEmpty()[repo]
-        return delegate.returningResponse(contributors).contributors(owner, repo)
+        if (contributions.isEmpty()){
+            withContext(Dispatchers.IO) {
+                val gson = Gson()
+                val rawType = object : TypeToken<List<Contributor>>() {}.rawType
+                flowOf("okhttp", "okio", "retrofit")
+                    .map { key ->
+                        key to async {
+                            FileInputStream("square_$key.json").reader().use {
+                                gson.fromJson<List<Contributor>>(it, rawType)
+                            }
+                        }
+                    }.collect {
+                        contributions[it.first] = it.second.await()
+                    }
+            }
+        }
+        return delegate.returningResponse(contributions[repo]).contributors(owner, repo)
     }
 
     override fun contributorsRxJava(owner: String, repo: String): Observable<List<Contributor>> {
