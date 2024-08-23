@@ -21,6 +21,10 @@ package com.example.aiyan.basiccoroutines._4_flow
  * 2、Channel的capacity和onBufferOverflow
  * 1、缓存溢出策略不是SUSPEND，直接使用新的capacity和onBufferOverflow
  * 2、缓存溢出策略是SUSPEND，不变，都具体设置了capacity，相加，否则BUFFERED
+ *
+ * ChannelFlow源码：
+ * produceImpl：使用coroutineScope.produce开启协程，返回ReceiveChannel
+ * collectTo：协程执行的代码块
  */
 
 import kotlinx.coroutines.Dispatchers
