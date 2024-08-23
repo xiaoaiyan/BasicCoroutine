@@ -14,7 +14,7 @@ import kotlinx.coroutines.supervisorScope
  * coroutineScope 和 launch 的区别
  * 1、coroutineScope：没有参数，不能定制coroutineContext，只能沿用父协程的上下文（除了Job）
  * 相当与launch什么参数也不填的效果
- * 2、coroutineScope：挂起函数，会等启动的协程执行完成后再继续执行coroutineScope函数，
+ * 2、coroutineScope：挂起函数，「会等启动的协程执行完成后」再继续执行coroutineScope函数，
  * launch协程启动，就执行下一行代码了，不会阻塞
  *
  * 3、coroutineScope有返回值

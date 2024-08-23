@@ -33,6 +33,7 @@ fun main() = runBlocking<Unit> {
     //mapLatest：相比于其他的操作符，mapLatest异步接收上游的数据，当接收到新的数据时
     //如果旧的数据依然还在处理，舍弃旧的数据，处理新的数据
     //底层通过使用channelFlow实现
+    // TODO: mapLatest：数据到来时如果正在转换数据则取消旧的转换，开始新的转换
     flow {
         emit(1)
         delay(500)

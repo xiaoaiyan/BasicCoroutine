@@ -5,6 +5,7 @@ import com.example.aiyan.basiccoroutines.github
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
@@ -56,6 +57,19 @@ import kotlinx.coroutines.runBlocking
 
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 fun main() = runBlocking<Unit> {
+    //capacity == 0，bufferOverflow需要为SUSPEND，否则capacity会被修改为1
+    val channel = Channel<Int>(1, BufferOverflow.DROP_OLDEST)
+    launch {
+        channel.send(1)
+        channel.send(2)
+        channel.send(3)
+    }
+    launch {
+        for (value in channel){
+            println("value: $value")
+        }
+    }
+
     /**
      * SendChannel.close ----------------------------------------------------------
      */
