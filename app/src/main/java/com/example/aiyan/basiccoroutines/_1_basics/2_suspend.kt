@@ -34,7 +34,7 @@ class SuspendFunctionActivity : ComponentActivity() {
             val contributors = github.contributors("square", "retrofit") //后台线程执行
             showContributors(contributors) //主线程执行
             /**
-             * suspend挂起：协程让出正在执行它的线程 知道 挂起函数执行完成（挂起函数会在它指定的线程执行完成）
+             * suspend挂起：协程让出正在执行它的线程 直到 挂起函数执行完成（挂起函数会在它指定的线程执行完成）
              * ——————————github.contributors("square", "retrofit")
              * 恢复：挂起函数执行完成后，继续执行挂起函数后面的代码
              * ——————————showContributors(contributors)
